@@ -14,7 +14,7 @@ const buildOrderController = (orderService: OrderService, logger: ILogger): Orde
   return {
     saveOrder: (req: Request, resp: Response, next: NextFunction) => {
       try {
-        logger.event(`RequestId: ${req.id}`);
+        logger.event(`Saving Order => RequestId: ${req.id}`);
         const order = new Order(req.body);
         const placedOrder = orderService.placeOrder(order);
 
@@ -27,7 +27,7 @@ const buildOrderController = (orderService: OrderService, logger: ILogger): Orde
 
     findById: (req: Request, resp: Response, next: NextFunction) => {
       try {
-        const order = orderService.findById(req.param("orderId"));
+        const order = orderService.findById(req.params["orderId"]);
         resp.status(200).json(order);
         next();
       } catch (err) {

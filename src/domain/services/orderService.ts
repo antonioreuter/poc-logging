@@ -16,7 +16,7 @@ export default class OrderService {
     this.logger.debug("Saving a new order.");
     order.id = uuidV4();
     this.placedOrders.set(order.id, order);
-    this.logger.event("The new order was saved:", order);
+    this.logger.event("The new order was saved:", { order });
     
     return order;
   }

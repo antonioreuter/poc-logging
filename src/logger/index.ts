@@ -1,39 +1,86 @@
 "use strict";
 
+import { Request } from "express";
+import * as BunyanLogger from "bunyan";
+
 import ILogger from "../domain/interfaces/ilogger";
-import RequestContext from "../context/requestContext";
+import { Order } from "../domain/models/order";
+
+const orderSerializer = (order: Order) => {
+  return {
+    id: order.id,
+    items: order.items.map(item => item.name),
+    total: order.total,
+    createdAt: order.createdAt
+  }
+}
+
+const requestSerializer = (req: Request) => {
+  return {
+    id: req.id,
+    method: req.method,
+    protocol: req.protocol,
+    url: req.url,
+    headers: req.headers,
+    accepted: req.accepted,
+    remoteAddress: req.connection.remoteAddress,
+    remotePort: req.connection.remotePort
+  };
+}
 
 export default class Logger implements ILogger {
-  // private logger:any;
-  private requestContext: RequestContext;
+  private logger: BunyanLogger;
 
-  constructor(requestContext: RequestContext) {
-    // this.logger = {};
-    this.requestContext = requestContext;
+  constructor() {
+    this.logger = BunyanLogger.createLogger({
+      name: "poc-logging",
+      serializers: {
+        req: requestSerializer,
+        err: BunyanLogger.stdSerializers.err,
+        order: orderSerializer
+      },
+      streams: [
+        {
+          level: "info",
+          stream: process.stdout
+        }
+      ]
+    });
   }
 
-  debug(message: string, data?: any): void {
-    const req = this.requestContext.retrieveRequest();
-    console.log(`[DEBUG] REQ[${req.id}] ${message}. DATA: ${JSON.stringify(data)}`);
+  debug(msg: string, data?: any): void {
+    this.logger.debug({
+      data
+    }, msg);
   }
 
-  warn(message: string, data?: any): void {
-    const req = this.requestContext.retrieveRequest();
-    console.log(`[WARN] REQ[${req.id}] ${message}. DATA: ${JSON.stringify(data)}`);
+  warn(msg: string, data?: any): void {
+    this.logger.warn({
+      data
+    }, msg);
   }
 
-  event(message: string, data?: any): void {
-    const req = this.requestContext.retrieveRequest();
-    console.log(`[INFO] REQ[${req.id}] ${message}. DATA: ${JSON.stringify(data)}`);
+  event(msg: string, data?: any): void {
+    this.logger.info(data, msg);
   }
 
-  issue(message: string, err: Error): void {
-    const req = this.requestContext.retrieveRequest();
-    console.log(`[ISSUE] REQ[${req.id}] ${message}. DATA: ${JSON.stringify(err)}`);
+  issue(msg: string, err: Error): void {
+    this.logger.error({
+      err
+    }, msg);
   }
 
-  requestLog(message: string, data?: any): void {
-    const req = this.requestContext.retrieveRequest();
-    console.log(`[REQUEST] REQ[${req.id}] ${message}. DATA: ${JSON.stringify(data)}`);
+  fatal(msg: string, req: Request, err: Error): void {
+    this.logger.error({
+      requestId: req.id,
+      err
+    }, msg);
+  }
+
+  requestLog(msg: string, req: Request): void {
+    this.logger.info({
+      requestId: req.id,
+      req
+    }, msg);
   }
 }
