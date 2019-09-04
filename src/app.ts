@@ -7,7 +7,7 @@ import expressRequestId from "express-request-id";
 
 import orderRoutes from "./controllers/orderRoutes";
 import OrderService from "./domain/services/orderService";
-import Logger from "./logger";
+import Logger from "./logger/logger";
 import requestLogMiddleware from "./logger/requestLogMiddleware";
 
 const app = express();
@@ -26,7 +26,7 @@ app.use("/api/orders", orderRoutes.build(orderService, logger));
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err) {
-    logger.fatal("Error handler", req, err);
+    logger.issue({ id: 4301, message: err.message }, err, req);
     res.status(500).json({
       error: err.message
     });

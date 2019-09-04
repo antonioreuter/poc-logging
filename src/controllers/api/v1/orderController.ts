@@ -14,7 +14,7 @@ const buildOrderController = (orderService: OrderService, logger: ILogger): Orde
   return {
     saveOrder: (req: Request, resp: Response, next: NextFunction) => {
       try {
-        logger.event(`Saving Order => RequestId: ${req.id}`);
+        logger.event({id: 4002, message: "Saving Order - controller"}, {}, req);
         const order = new Order(req.body);
         const placedOrder = orderService.placeOrder(order);
 

@@ -3,6 +3,7 @@
 import { Order } from "../models/order";
 import { v4 as uuidV4 } from "uuid";
 import ILogger from "../interfaces/ilogger";
+import OrderCreateEvent from "../models/logger/events/orderCreateEvent";
 
 export default class OrderService {
   private placedOrders:Map<string, Order> = new Map();
@@ -13,10 +14,10 @@ export default class OrderService {
   }
 
   placeOrder(order: Order) {
-    this.logger.debug("Saving a new order.");
+    this.logger.debug("Saving a new order.", {});
     order.id = uuidV4();
     this.placedOrders.set(order.id, order);
-    this.logger.event("The new order was saved:", { order });
+    this.logger.event(new OrderCreateEvent(), { order });
     
     return order;
   }

@@ -1,9 +1,9 @@
 "use strict";
 
 export default interface ILogger {
-  debug(message: string, data?: any): void;
-  warn(message: string, data?: any): void;
-  event(message: string, data?: any): void;
-  issue(message: string, err: Error): void;
-  requestLog(message: string, data?: any): void;
+  debug(message: string, data: any, req?: any): void;
+  event(eventLog: any, data: any, req?: any): void;
+  issue(eventLog: any, err: Error, req?: any): void;
+  fatal(eventLog: any, err: Error, req?: any): void;
+  requestLog(eventLog: any, req: any): void;
 }
