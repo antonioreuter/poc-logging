@@ -28,7 +28,7 @@
     "express-http-context": "^1.2.3",
     "express-request-id": "^1.4.1",
     "helmet": "^3.20.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "uuid": "^3.3.3"
   }
 }
